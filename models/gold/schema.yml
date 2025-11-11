@@ -1,9 +1,16 @@
-{% macro generate_schema_name(custom_schema_name, node) -%}
-    {%- set default_schema = target.schema -%}
-    
-    {%- if custom_schema_name is none -%}
-        {{ default_schema }}
-    {%- else -%}
-        {{ custom_schema_name | upper }}
-    {%- endif -%}
-{%- endmacro %}
+version: 2
+
+models:
+  - name: customer_analytics
+    description: "Customer analytics with aggregated metrics"
+    columns:
+      - name: customer_key
+        tests:
+          - not_null
+          - unique
+      - name: total_orders
+      - name: total_spent
+      - name: avg_order_value
+        
+  - name: business_kpis
+    description: "Business KPIs and metrics"
