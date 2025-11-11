@@ -1,9 +1,32 @@
-{% macro generate_schema_name(custom_schema_name, node) -%}
-    {%- set default_schema = target.schema -%}
-    
-    {%- if custom_schema_name is none -%}
-        {{ default_schema }}
-    {%- else -%}
-        {{ custom_schema_name | upper }}
-    {%- endif -%}
-{%- endmacro %}
+name: 'medallion_project'
+version: '1.0.0'
+config-version: 2
+
+profile: 'medallion_snowflake'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  medallion_project:
+    staging:
+      +schema: STAGING
+      +materialized: view
+    bronze:
+      +schema: BRONZE
+      +materialized: incremental
+    silver:
+      +schema: SILVER
+      +materialized: table
+    gold:
+      +schema: GOLD
+      +materialized: table
