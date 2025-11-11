@@ -1,9 +1,15 @@
-{% macro generate_schema_name(custom_schema_name, node) -%}
-    {%- set default_schema = target.schema -%}
-    
-    {%- if custom_schema_name is none -%}
-        {{ default_schema }}
-    {%- else -%}
-        {{ custom_schema_name | upper }}
-    {%- endif -%}
-{%- endmacro %}
+{{
+    config(
+        materialized='incremental',
+        unique_key='customer_id'
+    )
+}}
+
+SELECT 
+    raw_json_data:customer_id::VARCHAR AS customer_id,
+    raw_json_data AS customer_data,
+    loaded_at
+FROM {{ ref('stg_customers_json') }}
+{% if is_incremental() %}
+WHERE loaded_at > (SELECT MAX(loaded_at) FROM {{ this }})
+{% endif %}
